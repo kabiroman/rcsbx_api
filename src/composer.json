@@ -1,0 +1,25 @@
+{
+  "name": "rcsbx/api",
+  "description": "RCS Bitrix Easy REST API",
+  "license": "MIT",
+  "minimum-stability": "dev",
+  "authors": [
+    {
+      "name": "Ruslan Kabirov",
+      "email": "kabirovruslan@gmail.com"
+    }
+  ],
+  "require": {
+    "php": ">=7.0"
+  },
+  "autoload": {
+    "psr-4": {
+      "Rcsbx\\": "src/Rcsbx/"
+    }
+  },
+  "extra": {
+    "branch-alias": {
+      "dev-master": "1.0.x-dev"
+    }
+  }
+}
