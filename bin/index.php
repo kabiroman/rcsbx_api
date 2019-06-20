@@ -17,8 +17,15 @@ require_once($_SERVER["DOCUMENT_ROOT"]."/bitrix/modules/main/include/prolog_befo
 @set_time_limit(0);
 @ignore_user_abort(true);
 
+// ToDo Перед использованием пропишите пространство имён своего API модуля
+// ToDo например YourModule\Api\Controller\
+$namespace = '';
+
+header("Content-type: application/json; charset=utf-8");
+
 try {
-    // ToDo include your API module here
+    if (!\Bitrix\Main\Loader::IncludeModule("erdc.api"))
+        throw new Exception("Could not include module `erdc.api`", 500);
 
     $request = Bitrix\Main\Application::getInstance()->getContext()->getRequest();
 
@@ -28,12 +35,13 @@ try {
     if (!isset($arRequestUri[2]))
         throw new \Rcsbx\Api\Exception\NotFoundException();
 
+    $substr_class = '';
     $arr_substr_class = explode('_', $arRequestUri[2]);
 
     foreach ($arr_substr_class as $substr){
         $substr_class .= ucfirst($substr);
     }
-    $class_name = 'Rcsbx\\Api\\Controller\\'.$substr_class.'Controller';
+    $class_name = $namespace.$substr_class.'Controller';
 
     if (!isset($arRequestUri[3]) || !class_exists($class_name)) {
         throw new \Rcsbx\Api\Exception\NotFoundException();
@@ -73,8 +81,7 @@ catch (Exception $e) {
         'message' => $e->getMessage(),
     ]);
     if($e->getCode() == 500) {
-        // ToDo your logger || notice
-
+        // ToDo ваш лог или оповещение
     }
 }
 catch (Error $e) {
@@ -85,6 +92,7 @@ catch (Error $e) {
         'code' => 500,
         'message' => $e->getMessage(),
     ]);
+    // ToDo ваш лог или оповещение
 }
 die();
 

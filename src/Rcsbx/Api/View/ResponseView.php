@@ -15,7 +15,7 @@ namespace Rcsbx\Api\View;
  * Class ResponseView
  * @package Rcsbx\Api\View
  */
-class ResponseView implements ResponseViewInterface
+abstract class ResponseView implements ResponseViewInterface
 {
     /**
      * @var string
@@ -59,7 +59,10 @@ class ResponseView implements ResponseViewInterface
 
     protected function generateTemplate()
     {
-        $arPath = explode (':', $this->template);
+        $reflector = new \ReflectionClass(get_class($this));
+        $__DIR__ = dirname($reflector->getFileName());
+
+        $arPath = explode(':', $this->template);
 
         $pathFile = '';
         foreach ($arPath as $dir){
@@ -70,7 +73,7 @@ class ResponseView implements ResponseViewInterface
 
         ob_start();
 
-        require_once __DIR__.'/../Resource/layout.php';
+        require_once realpath($__DIR__ . '/../Resource/layout.php');
 
         $content = ob_get_contents();
         ob_end_clean();
