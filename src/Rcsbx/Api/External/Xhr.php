@@ -121,7 +121,7 @@ class Xhr
         $this->setUrl($url);
 
         if ($execute)
-            return $this->exec();
+            $this->exec();
     }
 
     /**

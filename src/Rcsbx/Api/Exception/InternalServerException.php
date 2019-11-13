@@ -10,7 +10,6 @@
 
 namespace Rcsbx\Api\Exception;
 
-
 use Throwable;
 
 /**
@@ -21,12 +20,13 @@ class InternalServerException extends \Exception
 {
     /**
      * InternalServerException constructor.
-     * @param string|null $message
+     *
+     * @param string|null    $message
      * @param Throwable|null $previous
      */
     public function __construct(string $message = null, Throwable $previous = null)
     {
-        $message = (!$message) ? "Internal Server Error!" : $message;
+        $message = ( ! $message) ? "Internal Server Error!" : $message;
 
         parent::__construct($message, 500, $previous);
     }

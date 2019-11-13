@@ -10,7 +10,6 @@
 
 namespace Rcsbx\Api\Exception;
 
-
 use Throwable;
 
 /**
@@ -21,12 +20,13 @@ class BadRequestException extends \Exception
 {
     /**
      * BadRequestException constructor.
-     * @param string|null $message
+     *
+     * @param string|null    $message
      * @param Throwable|null $previous
      */
     public function __construct(string $message = null, Throwable $previous = null)
     {
-        $message = (!$message) ? "Bad Request!" : $message;
+        $message = ( ! $message) ? "Bad Request!" : $message;
 
         parent::__construct($message, 400, $previous);
     }

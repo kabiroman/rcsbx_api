@@ -12,7 +12,6 @@ namespace Rcsbx\Api\Exception;
 
 use Throwable;
 
-
 /**
  * Class AlreadyExistsException
  * @package Rcsbx\Api\Exception
@@ -21,12 +20,13 @@ class AlreadyExistsException extends \Exception
 {
     /**
      * BadRequestException constructor.
-     * @param string|null $message
+     *
+     * @param string|null    $message
      * @param Throwable|null $previous
      */
     public function __construct(string $message = null, Throwable $previous = null)
     {
-        $message = (!$message) ? "Already Exists!" : $message;
+        $message = ( ! $message) ? "Already Exists!" : $message;
 
         parent::__construct($message, 409, $previous);
     }

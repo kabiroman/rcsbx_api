@@ -12,7 +12,6 @@ namespace Rcsbx\Api\Controller;
 
 use Bitrix\Main\HttpRequest;
 
-
 /**
  * Class Controller
  * @package Rcsbx\Api\Controller
@@ -31,22 +30,25 @@ abstract class Controller
 
     /**
      * Controller constructor.
+     *
      * @param HttpRequest $request
      */
     public function __construct(HttpRequest $request)
     {
-        $this->request = $request;
+        $this->request  = $request;
         $this->response = new Response();
         $this->response->setCode(200);
     }
 
     /**
      * @param HttpRequest $request
+     *
      * @return Controller
      */
     public function setRequest(HttpRequest $request)
     {
         $this->request = $request;
+
         return $this;
     }
 
@@ -60,11 +62,13 @@ abstract class Controller
 
     /**
      * @param Response $response
+     *
      * @return Controller
      */
     public function setResponse($response)
     {
         $this->response = $response;
+
         return $this;
     }
 

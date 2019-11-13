@@ -10,7 +10,6 @@
 
 namespace Rcsbx\Api\Exception;
 
-
 use Throwable;
 
 /**
@@ -21,12 +20,13 @@ class NotFoundException extends \Exception
 {
     /**
      * NotFoundException constructor.
-     * @param string|null $message
+     *
+     * @param string|null    $message
      * @param Throwable|null $previous
      */
     public function __construct(string $message = null, Throwable $previous = null)
     {
-        $message = (!$message) ? "Not Found!" : $message;
+        $message = ( ! $message) ? "Not Found!" : $message;
 
         parent::__construct($message, 404, $previous);
     }

@@ -10,7 +10,6 @@
 
 namespace Rcsbx\Api\View;
 
-
 /**
  * Interface ResponseViewInterface
  * @package Rcsbx\Api\View

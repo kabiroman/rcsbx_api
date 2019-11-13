@@ -10,7 +10,6 @@
 
 namespace Rcsbx\Api\Controller;
 
-
 use Rcsbx\Api\View\ResponseViewInterface;
 
 /**
@@ -43,13 +42,16 @@ class Response
      * @var array
      */
     private $data = [];
+
     /**
      * @param integer $code
+     *
      * @return Response
      */
     public function setCode($code)
     {
         $this->code = $code;
+
         return $this;
     }
 
@@ -63,11 +65,13 @@ class Response
 
     /**
      * @param string $message
+     *
      * @return Response
      */
     public function setMessage($message)
     {
         $this->message = $message;
+
         return $this;
     }
 
@@ -81,11 +85,13 @@ class Response
 
     /**
      * @param array $data
+     *
      * @return Response
      */
     public function setData($data)
     {
         $this->data = $data;
+
         return $this;
     }
 
@@ -107,11 +113,13 @@ class Response
 
     /**
      * @param ResponseViewInterface $view
+     *
      * @return Response
      */
     public function setView(ResponseViewInterface $view): Response
     {
         $this->view = $view;
+
         return $this;
     }
 
@@ -125,13 +133,13 @@ class Response
 
     /**
      * @param string $contentType
+     *
      * @return Response
      */
     public function setContentType(string $contentType): Response
     {
         $this->contentType = $contentType;
+
         return $this;
     }
-
-
 }
