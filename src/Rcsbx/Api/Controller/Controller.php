@@ -47,7 +47,7 @@ abstract class Controller
      */
     public function init()
     {
-        if ($this->onThisInit(new EventParams(['request' => $this->request, 'response' => $this->response]))
+        if ($this->onThisInit((new EventParams())->setRequest($this->request)->setResponse($this->response))
             === false
         ) {
             return false;
@@ -109,16 +109,19 @@ abstract class Controller
     /**
      * @param string      $type
      * @param EventParams $params
+     * @param string      $moduleId
      *
      * @return mixed
      */
-    protected function eventSend(string $type, EventParams $params)
+    protected function eventSend(string $type, EventParams $params, string $moduleId = null)
     {
         $params['controller'] = $this;
 
         $params->setType($type);
 
-        $Event = new Event('rcsbx_api', $type, [$params]);
+        $moduleId = ($moduleId) ? $moduleId : 'rcsbx_api';
+
+        $Event = new Event($moduleId, $type, [$params]);
         $Event->send();
 
         return $params->getResult();

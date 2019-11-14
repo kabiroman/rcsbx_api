@@ -10,6 +10,8 @@
 
 namespace Rcsbx\Api\Event;
 
+use Bitrix\Main\HttpRequest;
+use Rcsbx\Api\Controller\Response;
 
 /**
  * Class EventParams
@@ -22,6 +24,16 @@ class EventParams extends \ArrayObject
      * @var string
      */
     private $type;
+
+    /**
+     * @var HttpRequest
+     */
+    private $request;
+
+    /**
+     * @var Response
+     */
+    private $response;
 
     /**
      * @var mixed
@@ -38,11 +50,13 @@ class EventParams extends \ArrayObject
 
     /**
      * @param string $type
+     *
      * @return EventParams
      */
     public function setType(string $type): EventParams
     {
         $this->type = $type;
+
         return $this;
     }
 
@@ -56,12 +70,53 @@ class EventParams extends \ArrayObject
 
     /**
      * @param mixed $result
+     *
      * @return EventParams
      */
     public function setResult($result)
     {
         $this->result = $result;
+
         return $this;
     }
 
+    /**
+     * @return HttpRequest
+     */
+    public function getRequest(): HttpRequest
+    {
+        return $this->request;
+    }
+
+    /**
+     * @param HttpRequest $request
+     *
+     * @return EventParams
+     */
+    public function setRequest(HttpRequest $request): EventParams
+    {
+        $this->request = $request;
+
+        return $this;
+    }
+
+    /**
+     * @return Response
+     */
+    public function getResponse(): Response
+    {
+        return $this->response;
+    }
+
+    /**
+     * @param Response $response
+     *
+     * @return EventParams
+     */
+    public function setResponse(Response $response): EventParams
+    {
+        $this->response = $response;
+
+        return $this;
+    }
 }
