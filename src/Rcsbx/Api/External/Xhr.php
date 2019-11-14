@@ -11,14 +11,19 @@
 
 namespace Rcsbx\Api\External;
 
+use Bitrix\Main\Event;
+use Rcsbx\Api\Event\EventParams;
+
 /**
  * Class Xhr
+ *
  * @package Rcsbx\Api\External
  */
 class Xhr
 {
     /**
      * Returned data
+     *
      * @var mixed
      */
     private $data;
@@ -26,18 +31,21 @@ class Xhr
 
     /**
      * Http response code
+     *
      * @var string
      */
     private $httpCode = '';
 
     /**
      * Host name
+     *
      * @var string
      */
     private $host = '';
 
     /**
      * Destination URL
+     *
      * @var string
      */
     private $url = '';
@@ -59,112 +67,140 @@ class Xhr
 
     /**
      * Header set
+     *
      * @var array
      */
     private $header = [];
 
     /**
      * Post mode
+     *
      * @var bool
      */
     private $post = false;
 
     /**
      * CURLOPT_RETURNTRANSFER Mode
+     *
      * @var bool
      */
     private $return_transfer = true;
 
     /**
      * Content type
+     *
      * @var string
      */
     private $content_type = 'application/json';
 
     /**
      * Post content
+     *
      * @var mixed
      */
     private $content;
 
     /**
      * Progress bar
+     *
      * @var array
      */
     private $progress = [];
 
     /**
      * No progress mode
+     *
      * @var bool
      */
     private $no_progress = true;
 
     /**
      * Progress function
+     *
      * @var mixed
      */
     private $progress_function = null;
 
     /**
      * Event log
+     *
      * @var array
      */
-    private $event_log = [];
+    private $errors = [];
 
     /**
      * XHR constructor.
-     * @param $url
+     *
+     * @param      $url
      * @param bool $execute
      */
-    public function __construct($url = '', $execute = false )
+    public function __construct($url = '', $execute = false)
     {
         $this->setUrl($url);
 
-        if ($execute)
+        if ($execute) {
             $this->exec();
+        }
     }
 
     /**
      * Curl execute
+     *
      * @return bool
      */
     public function exec()
     {
+        $this->onBeforeExec(new EventParams(['url' => $this->url]));
+
         try {
             if ($ch = curl_init()) {
                 curl_setopt($ch, CURLOPT_URL, $this->getUrl());
                 curl_setopt($ch, CURLOPT_RETURNTRANSFER, $this->isReturnTransfer());
                 curl_setopt($ch, CURLOPT_POST, $this->isPost());
 
-                if ($this->isPost())
-                    curl_setopt($ch, CURLOPT_POSTFIELDS, (is_array($this->getContent())) ? http_build_query($this->getContent()) : $this->getContent());
+                if ($this->isPost()) {
+                    curl_setopt(
+                        $ch,
+                        CURLOPT_POSTFIELDS,
+                        (is_array($this->getContent())) ? http_build_query($this->getContent()) : $this->getContent()
+                    );
+                }
 
-                if (!empty($this->getHeader()))
+                if ( ! empty($this->getHeader())) {
                     curl_setopt($ch, CURLOPT_HTTPHEADER, $this->getHeader());
+                }
 
                 curl_setopt($ch, CURLOPT_NOPROGRESS, $this->isNoProgress());
 
-                if ( ! $this->isNoProgress() && $this->getProgressFunction() !== null ) {
-                    curl_setopt($ch,
+                if ( ! $this->isNoProgress() && $this->getProgressFunction() !== null) {
+                    curl_setopt(
+                        $ch,
                         CURLOPT_PROGRESSFUNCTION,
                         $this->getProgressFunction()
                     );
                 }
                 $this->setData(curl_exec($ch));
-                $this->setHttpCode( curl_getinfo($ch, CURLINFO_HTTP_CODE) );
+                $this->setHttpCode(curl_getinfo($ch, CURLINFO_HTTP_CODE));
                 curl_close($ch);
 
+                $this->onAfterExec(new EventParams(['url' => $this->url]));
+
+                return true;
+
             } else {
-                $e = new \Exception();
                 $arError = error_get_last();
-                $this->addEventLog([new \DateTime(),$arError['file'].'('.$arError['line'].'): '.$arError['message'], $e->getTraceAsString()] );
-                return false;
+
+                $e = new \Exception($arError['file'].'('.$arError['line'].'): '.$arError['message']);
+
+                $this->addError($e);
             }
-        } catch ( \Exception $e ){
-            $this->addEventLog([new \DateTime(),$e->getMessage(), $e->getTraceAsString()]);
-            return false;
+        } catch (\Exception $e) {
+            $this->addError($e);
         }
-        return true;
+
+        $this->onAfterExec(new EventParams(['url' => $this->url]));
+
+        return false;
     }
 
     /**
@@ -176,14 +212,15 @@ class Xhr
      * @param $uploadSize
      * @param $uploaded
      */
-    public function progress($resource, $downloadSize, $downloaded, $uploadSize, $uploaded ){
+    public function progress($resource, $downloadSize, $downloaded, $uploadSize, $uploaded)
+    {
         $this->progress[] = [
-            'datetime'=> new \DateTime(),
-            'resource' => $resource,
+            'datetime'      => new \DateTime(),
+            'resource'      => $resource,
             'download_size' => $downloadSize,
-            'downloaded' => $downloaded,
-            'upload_size' => $uploadSize,
-            'uploaded' => $uploaded
+            'downloaded'    => $downloaded,
+            'upload_size'   => $uploadSize,
+            'uploaded'      => $uploaded
         ];
     }
 
@@ -229,6 +266,7 @@ class Xhr
 
     /**
      * @param string $url
+     *
      * @return $this
      */
     public function setUrl($url)
@@ -280,6 +318,7 @@ class Xhr
 
     /**
      * @param string $security_key
+     *
      * @return $this
      */
     public function setSecurityKey($security_key)
@@ -288,6 +327,7 @@ class Xhr
 
         return $this;
     }
+
     /**
      * @return array
      */
@@ -298,6 +338,7 @@ class Xhr
 
     /**
      * @param array $header
+     *
      * @return $this
      */
     public function setHeader(array $header)
@@ -318,6 +359,7 @@ class Xhr
 
     /**
      * @param string $content_type
+     *
      * @return $this
      */
     public function setContentType($content_type)
@@ -337,6 +379,7 @@ class Xhr
 
     /**
      * @param string|array $content
+     *
      * @return $this
      */
     public function setContent($content)
@@ -348,6 +391,7 @@ class Xhr
 
     /**
      * @param $arr
+     *
      * @return $this
      */
     public function addContent($arr)
@@ -375,6 +419,7 @@ class Xhr
 
     /**
      * @param boolean $bool
+     *
      * @return $this
      */
     public function setPost($bool)
@@ -387,24 +432,17 @@ class Xhr
     /**
      * @return array
      */
-    public function getEventLog()
+    public function getErrors()
     {
-        return $this->event_log;
+        return $this->errors;
     }
 
     /**
-     * @param array $event_log
+     * @param \Throwable $e
      */
-    public function setEventLog($event_log)
+    public function addError(\Throwable $e)
     {
-        $this->event_log = $event_log;
-    }
-    /**
-     * @param array $event_log
-     */
-    public function addEventLog($event_log)
-    {
-        $this->event_log[] = $event_log;
+        $this->errors[] = $e;
     }
 
     /**
@@ -449,6 +487,7 @@ class Xhr
 
     /**
      * @param boolean $value
+     *
      * @return $this
      */
     public function setNoProgress($value)
@@ -468,6 +507,7 @@ class Xhr
 
     /**
      * @param mixed $progress_function
+     *
      * @return $this
      */
     public function setProgressFunction($progress_function)
@@ -493,4 +533,41 @@ class Xhr
         $this->httpCode = $httpCode;
     }
 
+    /**
+     * @param EventParams $params
+     *
+     * @return mixed
+     */
+    protected function onBeforeExec(EventParams $params)
+    {
+        return $this->eventSend('onBeforeExternalRequestExec', $params);
+    }
+
+    /**
+     * @param EventParams $params
+     *
+     * @return mixed
+     */
+    protected function onAfterExec(EventParams $params)
+    {
+        return $this->eventSend('onAfterExternalRequestExec', $params);
+    }
+
+    /**
+     * @param string      $type
+     * @param EventParams $params
+     *
+     * @return mixed
+     */
+    protected function eventSend(string $type, EventParams $params)
+    {
+        $params['request'] = $this;
+
+        $params->setType($type);
+
+        $Event = new Event('rcsbx_api', $type, [$params]);
+        $Event->send();
+
+        return $params->getResult();
+    }
 }
